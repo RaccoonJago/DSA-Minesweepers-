@@ -3,7 +3,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.*;
 
 public class App {
-    public static void main(String[] args) { //[] là Array Implementation AlgorithmA. main, TC = O(1)
+    public static void main(String[] args) { //mấy cái [] là Array Implementation AlgorithmA. main, TC = O(1)
         showHomeScreen(); // Hiển thị màn hình chính
     }
 
@@ -72,7 +72,7 @@ public class App {
         homeFrame.setVisible(true);
     }
 
-    public static void showLevelScreen() { //showLevelScreen, TC = O(n²)
+    public static void showLevelScreen() { //showLevelScreen, TC = O(1)
         // Tạo JFrame mới cho màn hình chọn cấp độ
         JFrame levelFrame = new JFrame("Your Pick!");
         levelFrame.setSize(630, 700);

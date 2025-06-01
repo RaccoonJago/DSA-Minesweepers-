@@ -38,7 +38,8 @@ public class Minesweeper {
     boolean gameOver = false;
 
     // Constructor now accepts difficulty level
-    public Minesweeper(int difficulty) { //Minesweeper (constructor), TC = O(1)
+    @SuppressWarnings("OverridableMethodCallInConstructor")
+    public Minesweeper(int difficulty) { //Minesweeper (constructor), TC = O(nxm), vì gọi initializeBoard() và setMines() đều là O(n × m).
         // Adjusting rows, columns, and mine count based on difficulty
         setDifficulty(difficulty);
 
@@ -141,7 +142,7 @@ public class Minesweeper {
                         if (e.getButton() == MouseEvent.BUTTON1) {  // Left-click
                             if (tile.getText().isEmpty()) {
                                 if (mineList.contains(tile)) {
-                                    revealMines(); // Game over, hiện mìn, O(m)
+                                    revealMines(); // Game over, hiện mìn, O(k), k là số mìn 
                                 } else {
                                     checkMine(tile.r, tile.c); //worst case: O(nxm), đệ quy toàn bảng, kiểm tra mìn
                                 }
@@ -162,22 +163,22 @@ public class Minesweeper {
         boardPanel.repaint();
     }
 
-    void setMines() { //setMines, TC = O(k), lấy k = tổng ô = nxm 
+    void setMines() {   //setMines, TC = O(nxm) (worst case). Trung bình O(k)
         mineList = new ArrayList<>();
         int mineLeft = mineCount;
         while (mineLeft > 0) {
-            int r = random.nextInt(numRows);
+            int r = random.nextInt(numRows);    //mấy nhỏ random.nextInt() này là random algorithm 
             int c = random.nextInt(numCols);
 
             MineTile tile = board[r][c];
-            if (!mineList.contains(tile)) {
+            if (!mineList.contains(tile)) {     //nhỏ này đảm bảo mìn kh bị trùng 
                 mineList.add(tile);
                 mineLeft--;
             }
         }
     }
 
-    void revealMines() { //revealMines, TC = O(n)
+    void revealMines() { //revealMines, TC = O(k), k là số mìn 
         for (MineTile tile : mineList) {
             tile.setText("💣");
             tile.setForeground(new Color(166, 6, 6));  // Màu dark red cho mìn
@@ -187,7 +188,7 @@ public class Minesweeper {
         playAgainButton.setEnabled(true);
     }
 
-    void checkMine(int r, int c) { //checkMine, TC = O(1)
+    void checkMine(int r, int c) { //checkMine, TC = O(1), worst case O(nxm) là nếu kh có mìn xung quanh thì flood fill 
         if (r < 0 || r >= numRows || c < 0 || c >= numCols) return;
 
         MineTile tile = board[r][c];
@@ -197,7 +198,7 @@ public class Minesweeper {
         tilesClicked++;
 
         int minesFound = 0;
-        minesFound += countMine(r - 1, c - 1); //trên trái, những đoạn này là ALgorthms của Neigbor Checking 
+        minesFound += countMine(r - 1, c - 1); //trên trái, những đoạn này là ALgorthm của Neigbor Checking, Kiểm tra 8 ô xung quanh để đếm mìn
         minesFound += countMine(r - 1, c); //trên 
         minesFound += countMine(r - 1, c + 1); //trên phải
         minesFound += countMine(r, c - 1); //trái
@@ -208,9 +209,7 @@ public class Minesweeper {
 
         if (minesFound > 0) {
             tile.setText(Integer.toString(minesFound));
-        } else { //Nếu gặp ô đã ktra, (tile.isEnabled() == false) thì else (quay lui)
-            //Chính vì nó liên tục thử-ktra-quay lui, đến khi thỏa mãn đkien -> Back Tracking ALgorithm 
-            //Hành vị đệ quy của Back Tracking, đkien tiếp tục: tile.isEnabled() == true. đkien dừng tile.isEnabled() == false, hoặc vượt giới hạn 
+        } else { //FLood fill algorithm 
             // Tiếp tục kiểm tra các ô xung quanh nếu không có mìn
             checkMine(r - 1, c - 1); //trên trái
             checkMine(r - 1, c); //trên 
@@ -229,12 +228,12 @@ public class Minesweeper {
         }
     }
 
-    int countMine(int r, int c) { //countMine, TC = O(m). không thể là O(1) vì m là số mìn hiện hữu 
+    int countMine(int r, int c) { //countMine, TC = O(k). không thể là O(1) vì k là số mìn hiện hữu 
         if (r < 0 || r >= numRows || c < 0 || c >= numCols) return 0;
-        return mineList.contains(board[r][c]) ? 1 : 0;
+        return mineList.contains(board[r][c]) ? 1 : 0; //ktra ô (r,c) có mìn kh trong danh sách mìn (mineList), có thì tra 1, kh thì trả 0. Linear search algorithm 
     }
 
-    void resetGame() { //resetGame, TC = O(n x m) = O(k)  (n x m - tổng số ô)
+    void resetGame() { //resetGame, TC = O(n x m), vì gọi lại initializeBoard() và setMines()
         tilesClicked = 0;
         gameOver = false;
         playAgainButton.setEnabled(false);
@@ -243,7 +242,7 @@ public class Minesweeper {
         setMines(); //O(k)
     }
 
-    void goHome() { //goHome, TC = O(1)
+    void goHome() { //goHome, TC = O(1), chỉ gọi frame.dispose()
         frame.dispose();  // Đóng cửa sổ Minesweeper
         App.showHomeScreen();  // Quay lại màn hình chính
     }
