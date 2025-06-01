@@ -3,23 +3,24 @@ import java.awt.event.ActionEvent;
 import javax.swing.*;
 
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) { //[] là Array Implementation AlgorithmA. main, TC = O(1)
         showHomeScreen(); // Hiển thị màn hình chính
     }
 
-    public static void showHomeScreen() {
-        // Tạo JFrame chính
+    public static void showHomeScreen() { //showHomeScreen, TC = O(1)
+        // Tạo (JFrame) - cửa sổ chính của ứng dụng.
         JFrame homeFrame = new JFrame("Boom Field");
-        homeFrame.setSize(630, 700);
-        homeFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        homeFrame.setLocationRelativeTo(null);
-        homeFrame.setResizable(false);
+        homeFrame.setSize(630, 700); //đơn vị pixel 
+        homeFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //đảm bảo tắt app khi đóng cửa sổ 
+        homeFrame.setLocationRelativeTo(null); //căn giữa cửa sổ 
+        homeFrame.setResizable(false); //ngăn user thay đổi size cửa sổ 
 
-        // Tạo JPanel chính với GridBagLayout
-        JPanel homePanel = new JPanel();
+        // Tạo (JPanel) chính với GridBagLayout
+        JPanel homePanel = new JPanel(); //vùng chứa dùng để đặt các nút, tiêu đề và thành phần giao diện khác.
         homePanel.setBackground(new Color(232, 247, 227)); // Nền light green pastel
         homePanel.setLayout(new GridBagLayout()); // Sử dụng GridBagLayout để căn giữa
 
+        //(GridBagConstraints) - định nghĩa cách đặt từng thành phần con trong GridBagLayout
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10); // Khoảng cách giữa các thành phần
         gbc.anchor = GridBagConstraints.CENTER; // Căn giữa các thành phần
@@ -71,7 +72,7 @@ public class App {
         homeFrame.setVisible(true);
     }
 
-    public static void showLevelScreen() {
+    public static void showLevelScreen() { //showLevelScreen, TC = O(n²)
         // Tạo JFrame mới cho màn hình chọn cấp độ
         JFrame levelFrame = new JFrame("Your Pick!");
         levelFrame.setSize(630, 700);
@@ -148,6 +149,24 @@ public class App {
 
         gbc.gridy = 3;
         levelPanel.add(hardButton, gbc);
+
+        // Nút Asian
+        JButton asianButton = new JButton("Asian");
+        asianButton.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        asianButton.setForeground(new Color(139, 131, 134)); // Màu chữ giống Back Home
+        asianButton.setPreferredSize(new Dimension(200, 40));
+        asianButton.setFocusable(false);
+        asianButton.setBackground(Color.WHITE);
+        asianButton.setBorder(BorderFactory.createLineBorder(new Color(139, 131, 134), 1, true));
+        asianButton.setOpaque(true);
+
+        asianButton.addActionListener((ActionEvent e) -> {
+            levelFrame.dispose();
+            new Minesweeper(50); // 50 mines for Asian level
+        });
+
+        gbc.gridy = 4;
+        levelPanel.add(asianButton, gbc);
 
         levelFrame.add(levelPanel);
         levelFrame.setVisible(true);

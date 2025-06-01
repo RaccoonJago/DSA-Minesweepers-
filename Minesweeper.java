@@ -5,11 +5,11 @@ import java.util.Random;
 import javax.swing.*;
 
 public class Minesweeper {
-    private class MineTile extends JButton {
+    private class MineTile extends JButton { 
         int r;
         int c;
 
-        public MineTile(int r, int c) {
+        public MineTile(int r, int c) { //MineTile (constructor), TC = O(1)
             this.r = r;
             this.c = c;
         }
@@ -21,7 +21,7 @@ public class Minesweeper {
     int boardWidth;
     int boardHeight;
 
-    JFrame frame = new JFrame("Boom Field");
+    JFrame frame = new JFrame("Boom Field"); //tạo cửa sổ giao diện chính
     JLabel textLabel = new JLabel();
     JPanel textPanel = new JPanel();
     JPanel boardPanel = new JPanel();
@@ -30,15 +30,15 @@ public class Minesweeper {
     JButton backHomeButton = new JButton("Back Home");
 
     int mineCount;
-    MineTile[][] board;
-    ArrayList<MineTile> mineList;
-    Random random = new Random();
+    MineTile[][] board; //data structure: Mảng (2D array) của JButton. [] hay [][] là Array Implementation Algorithm. 
+    ArrayList<MineTile> mineList; //data structure: Danh sách động (ArrayList), lưu vị trí các ô có mìn đã được gán
+    Random random = new Random(); //data structure: (Random) từ java.util. Sinh mìn ngẫu nhiên, Randomization Algorithm 
 
     int tilesClicked = 0;
     boolean gameOver = false;
 
     // Constructor now accepts difficulty level
-    public Minesweeper(int difficulty) {
+    public Minesweeper(int difficulty) { //Minesweeper (constructor), TC = O(1)
         // Adjusting rows, columns, and mine count based on difficulty
         setDifficulty(difficulty);
 
@@ -81,13 +81,13 @@ public class Minesweeper {
 
         frame.add(buttonPanel, BorderLayout.SOUTH);
 
-        initializeBoard();
-        setMines();
+        initializeBoard(); 
+        setMines(); 
         frame.setVisible(true);
     }
 
     // Method to set difficulty settings
-    private void setDifficulty(int difficulty) {
+    private void setDifficulty(int difficulty) { //setDifficulty, TC = O(1)
         switch (difficulty) {
             case 10:
                 numRows = 9;
@@ -104,6 +104,11 @@ public class Minesweeper {
                 numCols = 14;
                 mineCount = 30;
                 break;
+             case 50:
+                numRows = 9;
+                numCols = 15;
+                mineCount = 50;
+                break;
             default:
                 numRows = 9;
                 numCols = 9;
@@ -115,7 +120,7 @@ public class Minesweeper {
         boardHeight = numRows * tileSize;
     }
 
-    void initializeBoard() {
+    void initializeBoard() { //initializeBoard, TC = O(nxm), hàng n x cột m. gộp nxm = k thì là O(k)
         boardPanel.removeAll();
         board = new MineTile[numRows][numCols];
         for (int r = 0; r < numRows; r++) {
@@ -127,7 +132,7 @@ public class Minesweeper {
                 tile.setMargin(new Insets(0, 0, 0, 0));
                 tile.setFont(new Font("Monospaced", Font.PLAIN, 30));
                 tile.setForeground(Color.GRAY); // Màu xám cho 💣
-                tile.addMouseListener(new MouseAdapter() {
+                tile.addMouseListener(new MouseAdapter() { //MouseAdapter (anonymous class), TC = O(1)
                     @Override
                     public void mousePressed(MouseEvent e) {
                         if (gameOver) return;
@@ -136,9 +141,9 @@ public class Minesweeper {
                         if (e.getButton() == MouseEvent.BUTTON1) {  // Left-click
                             if (tile.getText().isEmpty()) {
                                 if (mineList.contains(tile)) {
-                                    revealMines(); // Game over, hiện mìn
+                                    revealMines(); // Game over, hiện mìn, O(m)
                                 } else {
-                                    checkMine(tile.r, tile.c);
+                                    checkMine(tile.r, tile.c); //worst case: O(nxm), đệ quy toàn bảng, kiểm tra mìn
                                 }
                             }
                         } else if (e.getButton() == MouseEvent.BUTTON3) {  // Right-click
@@ -157,7 +162,7 @@ public class Minesweeper {
         boardPanel.repaint();
     }
 
-    void setMines() {
+    void setMines() { //setMines, TC = O(k), lấy k = tổng ô = nxm 
         mineList = new ArrayList<>();
         int mineLeft = mineCount;
         while (mineLeft > 0) {
@@ -172,7 +177,7 @@ public class Minesweeper {
         }
     }
 
-    void revealMines() {
+    void revealMines() { //revealMines, TC = O(n)
         for (MineTile tile : mineList) {
             tile.setText("💣");
             tile.setForeground(new Color(166, 6, 6));  // Màu dark red cho mìn
@@ -182,7 +187,7 @@ public class Minesweeper {
         playAgainButton.setEnabled(true);
     }
 
-    void checkMine(int r, int c) {
+    void checkMine(int r, int c) { //checkMine, TC = O(1)
         if (r < 0 || r >= numRows || c < 0 || c >= numCols) return;
 
         MineTile tile = board[r][c];
@@ -192,27 +197,29 @@ public class Minesweeper {
         tilesClicked++;
 
         int minesFound = 0;
-        minesFound += countMine(r - 1, c - 1);
-        minesFound += countMine(r - 1, c);
-        minesFound += countMine(r - 1, c + 1);
-        minesFound += countMine(r, c - 1);
-        minesFound += countMine(r, c + 1);
-        minesFound += countMine(r + 1, c - 1);
-        minesFound += countMine(r + 1, c);
-        minesFound += countMine(r + 1, c + 1);
+        minesFound += countMine(r - 1, c - 1); //trên trái, những đoạn này là ALgorthms của Neigbor Checking 
+        minesFound += countMine(r - 1, c); //trên 
+        minesFound += countMine(r - 1, c + 1); //trên phải
+        minesFound += countMine(r, c - 1); //trái
+        minesFound += countMine(r, c + 1); //phải
+        minesFound += countMine(r + 1, c - 1); //dưới trái
+        minesFound += countMine(r + 1, c); //dưới
+        minesFound += countMine(r + 1, c + 1); //dưới phải
 
         if (minesFound > 0) {
             tile.setText(Integer.toString(minesFound));
-        } else {
+        } else { //Nếu gặp ô đã ktra, (tile.isEnabled() == false) thì else (quay lui)
+            //Chính vì nó liên tục thử-ktra-quay lui, đến khi thỏa mãn đkien -> Back Tracking ALgorithm 
+            //Hành vị đệ quy của Back Tracking, đkien tiếp tục: tile.isEnabled() == true. đkien dừng tile.isEnabled() == false, hoặc vượt giới hạn 
             // Tiếp tục kiểm tra các ô xung quanh nếu không có mìn
-            checkMine(r - 1, c - 1);
-            checkMine(r - 1, c);
-            checkMine(r - 1, c + 1);
-            checkMine(r, c - 1);
-            checkMine(r, c + 1);
-            checkMine(r + 1, c - 1);
-            checkMine(r + 1, c);
-            checkMine(r + 1, c + 1);
+            checkMine(r - 1, c - 1); //trên trái
+            checkMine(r - 1, c); //trên 
+            checkMine(r - 1, c + 1); //trên phải
+            checkMine(r, c - 1); //trái
+            checkMine(r, c + 1); //phải
+            checkMine(r + 1, c - 1); //dưới trái
+            checkMine(r + 1, c); //dưới
+            checkMine(r + 1, c + 1); //dưới phải 
         }
 
         if (tilesClicked == numRows * numCols - mineList.size()) {
@@ -222,21 +229,21 @@ public class Minesweeper {
         }
     }
 
-    int countMine(int r, int c) {
+    int countMine(int r, int c) { //countMine, TC = O(m). không thể là O(1) vì m là số mìn hiện hữu 
         if (r < 0 || r >= numRows || c < 0 || c >= numCols) return 0;
         return mineList.contains(board[r][c]) ? 1 : 0;
     }
 
-    void resetGame() {
+    void resetGame() { //resetGame, TC = O(n x m) = O(k)  (n x m - tổng số ô)
         tilesClicked = 0;
         gameOver = false;
         playAgainButton.setEnabled(false);
         textLabel.setText("Minesweeper: " + mineCount);
-        initializeBoard();
-        setMines();
+        initializeBoard(); //O(nxm) = O(k)
+        setMines(); //O(k)
     }
 
-    void goHome() {
+    void goHome() { //goHome, TC = O(1)
         frame.dispose();  // Đóng cửa sổ Minesweeper
         App.showHomeScreen();  // Quay lại màn hình chính
     }
